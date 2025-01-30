@@ -1,8 +1,8 @@
-Battleship Game
+**Battleship Game**
 
 This is a console-based implementation of the classic Battleship game, where a player competes against an AI opponent.
 
-How to Play
+**How to Play**
 
 The game is played on a 6x6 grid.
 
@@ -20,7 +20,7 @@ Players take turns firing at enemy coordinates (x, y).
 
 The game continues until one player sinks all enemy ships.
 
-Gameplay Mechanics
+**Gameplay Mechanics**
 
 ○ represents an empty space.
 
@@ -34,7 +34,7 @@ Players take turns firing at enemy positions.
 
 When a ship is completely destroyed, the game announces: "Ship sunk!".
 
-Code Structure
+**Code Structure**
 
 Main Classes
 
@@ -52,13 +52,13 @@ AI: Generates random moves for the AI opponent.
 
 Game: Manages the game flow.
 
-Exceptions
+**Exceptions**
 
 BoardOutException: Raised if a ship or shot is out of bounds.
 
 BoardCrossException: Raised if ships overlap or a shot is repeated.
 
-Running the Game
+**Running the Game**
 
 Ensure you have Python installed, then run:
 
