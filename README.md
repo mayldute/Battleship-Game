@@ -35,8 +35,8 @@ The game continues until one player sinks all of the opponent’s ships. The pla
 
 1. Clone the repository to your local machine:
     ```bash
-    git clone https://github.com/yourusername/Battleship-Game.git
-    cd Battleship-Game
+    git clone https://github.com/yourusername/battleshipgame.git
+    cd battleshipgame
     ```
 
 2. Run the game:
