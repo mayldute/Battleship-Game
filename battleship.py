@@ -27,11 +27,11 @@ class Ship:
     def dots(self):
         ship_dots = []
 
-        if self.direction == 'горизонтальное':
+        if self.direction == 'horizontal':
             for i in range(self.length):
                 dot = Dot(self.bow.x + i, self.bow.y)
                 ship_dots.append(dot)
-        elif self.direction == 'вертикальное':
+        elif self.direction == 'vertical':
             for i in range(self.length):
                 dot = Dot(self.bow.x, self.bow.y + i)
                 ship_dots.append(dot)
@@ -61,9 +61,9 @@ class Board:
         ship = Ship(length, direction, bow_x, bow_y)
         
         if self.out(ship.dots()):
-            raise BoardOutException('\nКорабль вне поля!\n')
+            raise BoardOutException('\nShip is out of bounds!\n')
         if any(dot in self.forbidden for dot in ship.dots()):
-            raise BoardCrossException('\nКорабли пересекаются!\n') 
+            raise BoardCrossException('\nShips cannot overlap!\n') 
         
         self.board.append(ship)
         self.ships_alive += 1
@@ -106,9 +106,9 @@ class Board:
     
     def shot(self, x, y):
         if x < 1 or y > 6 or x > 6 or y < 1 :
-            raise BoardOutException('\nВыстрел за пределы поля!\n')
+            raise BoardOutException('\nShot is out of bounds!\n')
         if Dot(x, y) in self.shot_dots:
-            raise BoardCrossException('\nНельзя делать выстрел в одну точку несколько раз!\n')
+            raise BoardCrossException('\nYou cannot shoot at the same point twice!\n')
 
         hitted = False
         
@@ -143,7 +143,7 @@ class Player:
                     for ship in self.enemy_board.ships:  
                         for dot in ship.dots():          
                             if ship.lives == 0 and dot == Dot(x, y):
-                                print('\nКорабль убит!\n')
+                                print('\nShip destroyed!\n')
                                 
                     repeat_shot = True
             except (BoardOutException, BoardCrossException) as e:
@@ -156,19 +156,19 @@ class Player:
                      
 class User(Player):
     def ask(self):
-        print('Твой ход!')
-        dots = input('Введите координаты для выстрела x и y через пробел: ')
+        print('Your turn!')
+        dots = input('Enter coordinates for the shot x and y separated by a space: ')
         x, y = dots.split()
         
         if len(dots.split()) != 2:
-            print('\nОшибка! Введи данные в формате: x y.\n')
+            print('\nError! Enter the data in the format: x y.\n')
         
         x, y =  int(x), int(y)
         return x, y
         
 class AI(Player):    
     def ask(self):
-        print('\nХод ИИ!\n')
+        print('\nAI’s turn!\n')
         x = random.randint(1, 6)
         y = random.randint(1, 6)
         return x, y
@@ -182,7 +182,7 @@ class Game:
 
     def random_board(self):
         max_attempts = 1000
-        direction = ['горизонтальное', 'вертикальное']
+        direction = ['horizontal', 'vertical']
         ship_len = [3, 2, 2, 1, 1, 1, 1]
         
         attempts = 0
@@ -214,14 +214,14 @@ class Game:
               
     def user_add_ship(self, length):
         while True:
-            input_data = input(f'Введи направление (горизонтальное/вертикальное) и координаты (x, y) для {length}-палубного корабля через пробел: ')
+            input_data = input(f'Enter direction (horizontal/vertical) and coordinates (x, y) for a {length}-deck ship separated by a space: ')
             ship_data = input_data.split(' ')
             
             if len(ship_data) != 3 or ',' in input_data or len(ship_data) == 0:
-                print('\nОшибка! Введи данные в формате: направление x y.\n')
+                print('\nError! Enter the data in the format: direction x y.\n')
                 continue
-            if ship_data[0] not in ['горизонтальное', 'вертикальное']:
-                print('\nНапрвыление задано неверно! Введите "горизонтальное" или "вертикальное".\n')
+            if ship_data[0] not in ['horizontal', 'vertical']:
+                print('\nInvalid direction! Enter “horizontal” or “vertical”\n')
                 continue
             else:
                 try:
@@ -244,15 +244,15 @@ class Game:
         
         for _ in range(4):
             while True:    
-                input_data = input('Введи координаты (x, y) для однопалубного корабля через пробел: ')
+                input_data = input(' Enter coordinates (x, y) for a single-deck ship separated by a space:')
                 ship_data = input_data.split(' ')
                     
                 if len(ship_data) != 2 or ',' in input_data or len(ship_data) == 0 or ship_data[1] == '':
-                    print('\nОшибка! Введи данные в формате: x y.\n')
+                    print('\nError! Enter the data in the format: x y.\n')
                     continue
                     
                 try:
-                    self.board.add_ship(1, 'горизонтальное', int(ship_data[0]), int(ship_data[1]))
+                    self.board.add_ship(1, 'horizontal', int(ship_data[0]), int(ship_data[1]))
                 except (BoardOutException, BoardCrossException) as e:
                     print(e)                   
                     continue
@@ -273,21 +273,20 @@ class Game:
     
     def greet(self):
         print('''
-Привет! 
-Это игра "Морской бой!" и твой противник - ИИ.
-Перед тем как начать игру ознакомься с правилами:
-1. Морской бой играется на квадратном поле с координатной сеткой 6х6.
-2. Каждому игроку на старте выдаются несколько кораблей разного размера: один трехпалубный, 
-два двухпалубных и четыре однопалубных корабля.
-3. Корабли размещаются на поле горизонтально или вертикально. Они не могут касаться друг друга 
-и соседних клеток, а также не могут выходить за пределы поля.
-4. Игроки стреляют по противнику, называя координаты цели на поле. Если выстрел приходится 
-в пустую клетку, то знак меняется на "T". Если выстрел попадает в клетку с кораблем, 
-то знак меняется на "X". Когда все палубы корабля поражены, в консоли отобразиться надпись - "Корабль убит!".
-5. Цель игры — потопить все корабли противника раньше, чем он сделает то же самое с вашими 
-кораблями. Первый игрок, чей флот будет полностью потоплен, проигрывает.
-              
-Давай расставим корабли на твоем поле!
+Hello!
+This is the game “Battleship!” and your opponent is the AI.
+Before starting the game, familiarize yourself with the rules:
+	1.	Battleship is played on a square grid with coordinates of 6x6.
+	2.	Each player starts with several ships of different sizes: one three-deck ship, two two-deck ships, and four single-deck ships.
+	3.	Ships are placed on the grid horizontally or vertically. They cannot touch each other or adjacent cells, nor can they go beyond the grid’s boundaries.
+	4.	Players take turns firing at the opponent by announcing the coordinates of their target on the grid.
+	•	If the shot hits an empty cell, the mark changes to “T”.
+	•	If the shot hits a cell with a ship, the mark changes to “X”.
+	•	When all decks of a ship are hit, a message will appear in the console: “Ship destroyed!”
+	5.	The goal of the game is to sink all of the opponent’s ships before they sink yours.
+	•	The first player whose entire fleet is sunk loses.
+
+Let’s place the ships on your grid!
         ''')
 
         self.user_board()
@@ -301,10 +300,10 @@ class Game:
                 self.combine_boards(self.board, self.ai_board)
                 
                 if self.board.ships_alive == 0:
-                    print('\nПобедил ИИ!\n')
+                    print('\nThe AI won!\n')
                     break
                 elif self.ai_board.ships_alive == 0:
-                    print('\nТы выиграл!\n')
+                    print('\nYou won!\n')
                     break
             else:
                 self.combine_boards(self.board, self.ai_board)
